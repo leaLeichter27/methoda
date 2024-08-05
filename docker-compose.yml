@@ -1,0 +1,15 @@
+version: '3'
+services:
+  backend:
+    build: ./methoda-server
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_URI=mongodb+srv://leaament:ME88QmGCUAJa9oIp@methoda.nxs4ota.mongodb.net/?retryWrites=true&w=majority&appName=methoda
+  frontend:
+    build: ./methoda-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+  # Remove the local mongo service since we're using MongoDB Atlas
