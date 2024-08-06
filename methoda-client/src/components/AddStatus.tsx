@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
 
-import { AppDispatch } from '../redux';
-import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addStatus } from '../redux/statusSlice';
 
 const AddStatus: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const statuses = useSelector((state: RootState) => state.statuses.statuses);
+
   const [name, setName] = useState<string>('');
   const [isInitial, setIsInitial] = useState<boolean>(false);
-  
-  const dispatch: AppDispatch = useDispatch();
 
+  const existingInitialStatus = statuses.find(status => status.isInitial);
+  
   const handleAddStatus = async () => {
-    dispatch(addStatus({ id: '', name, isInitial }));
-    setName('');
-    setIsInitial(false);
+      if (!name.trim()) {
+        alert('Status name is required.');
+        return;
+      }
+
+    try {
+      await dispatch(addStatus({ name, isInitial })).unwrap();
+      setName('');
+      setIsInitial(false);
+    } catch (err) {
+      alert(err);
+    }
   };
 
   return (
@@ -30,6 +42,7 @@ const AddStatus: React.FC = () => {
           type="checkbox"
           checked={isInitial}
           onChange={(e) => setIsInitial(e.target.checked)}
+          disabled={!!existingInitialStatus}
         />
         Initial Status
       </label>

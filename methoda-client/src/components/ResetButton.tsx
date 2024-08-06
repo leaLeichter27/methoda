@@ -1,25 +1,31 @@
-// import React from 'react';
-// import { useDispatch } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-// import { resetConfiguration as resetConfigurationApi } from '../services/api';
-// import { fetchStatuses } from '../redux/statusSlice';
-// import { fetchTransitions } from '../redux/transitionSlice';
+import { resetConfiguration } from '../redux/transitionSlice';
+import { RootState, AppDispatch } from '../redux'; 
 
-// const ResetButton: React.FC = () => {
-//   const dispatch = useDispatch();
+const ResetButton: React.FC = () => {
+  const dispatch : AppDispatch = useDispatch();
+  const loading = useSelector((state: RootState) => state.transitions.loading || state.statuses.loading);
+  const error = useSelector((state: RootState) => state.transitions.error || state.statuses.error);
 
-//   const handleReset = async () => {
-//     await resetConfigurationApi();
-//     dispatch(fetchStatuses([]));
-//     dispatch(fetchTransitions([]));
-//   };
+  const handleReset = () => {
+    dispatch(resetConfiguration());
+  };
 
-//   return (
-//     <>
-//       <button onClick={handleReset} style={{ color: 'red' }}>Reset</button>
-//     </>
-//   );
-// };
+  return (
+    <div style={{marginTop: '50px'}}>
+      <button
+        onClick={handleReset}
+        style={{ backgroundColor: 'red', color: 'white', padding: '10px 20px', fontSize: '16px', cursor: "pointer", borderRadius: "50px" }}
+        disabled={loading}
+      >
+        Reset Configuration
+      </button>
+      {loading && <p>Resetting...</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+    </div>
+  );
+};
 
-// export default ResetButton;
-export  {}
+export default ResetButton;

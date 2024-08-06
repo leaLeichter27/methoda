@@ -1,13 +1,15 @@
 export interface Status {
-    id: string;
+    _id?: string;
     name: string;
     isInitial: boolean;
+    isOrphan?: boolean;
+    isFinal?: boolean;
 }
   
 export interface Transition {
-    id: string;
+    id?: string;
     name: string;
-    fromStatus: Status;
-    toStatus: Status;
+    fromStatus: Status | string;
+    toStatus: Status | string;
 }
   

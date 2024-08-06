@@ -1,12 +1,7 @@
-
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+
 import { Status } from '../types';
-
-// const api = axios.create({
-//   baseURL: 'http://localhost:3001'
-// });
-
+import { resetConfiguration } from './transitionSlice';
 
 export const fetchStatuses = createAsyncThunk<Status[], void, { rejectValue: string }>(
     'statuses/fetchStatuses',
@@ -39,8 +34,9 @@ export const addStatus = createAsyncThunk<Status, Status, { rejectValue: string 
         const data = await response.json();
         console.log("addStatus", data);
         return data;
-      } catch (error) {
-        return thunkAPI.rejectWithValue('Failed to add member.');
+      } catch (error: any) {
+        return thunkAPI.rejectWithValue(error.response?.data || 'Failed to add status.');
+    
       }
     }
 
@@ -50,7 +46,7 @@ export const deleteStatus = createAsyncThunk<string, string, { rejectValue: stri
   'statuses/deleteStatus',
   async (id, thunkAPI) => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/api/status/delete/${id}`, { method: 'DELETE' });
+      await fetch(`${process.env.REACT_APP_API_URL}/api/status/deleteStatus/${id}`, { method: 'DELETE' });
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue('Failed to delete status.');
@@ -92,8 +88,20 @@ const statusSlice = createSlice({
         state.statuses.push(action.payload);
       })
       .addCase(deleteStatus.fulfilled, (state, action) => {
-        state.statuses = state.statuses.filter(status => status.id !== action.payload);
-      });
+        state.statuses = state.statuses.filter(status => status._id !== action.payload);
+      })
+      .addCase(resetConfiguration.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetConfiguration.fulfilled, (state) => {
+        state.loading = false;
+        state.statuses = [];
+      })
+      .addCase(resetConfiguration.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
   }
 });
 

@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { Transition } from '../types';
 
 export const fetchTransitions = createAsyncThunk<Transition[], void, { rejectValue: string }>(
@@ -41,10 +40,21 @@ export const deleteTransition = createAsyncThunk<string, string, { rejectValue: 
   'transitions/deleteTransition',
   async (id, thunkAPI) => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/api/transition/delete/${id}`, { method: 'DELETE' });
+      await fetch(`${process.env.REACT_APP_API_URL}/api/transition/deleteTransition/${id}`, { method: 'DELETE' });
       return id;
     } catch (error) {
       return thunkAPI.rejectWithValue('Failed to delete transition.');
+    }
+  }
+);
+
+export const resetConfiguration = createAsyncThunk(
+  'transition/resetConfiguration',
+  async (_, { rejectWithValue }) => {
+    try {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/transition/reset`, { method: 'DELETE' });
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -84,6 +94,17 @@ const transitionSlice = createSlice({
       })
       .addCase(deleteTransition.fulfilled, (state, action) => {
         state.transitions = state.transitions.filter(transition => transition.id !== action.payload);
+      })
+      .addCase(resetConfiguration.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetConfiguration.fulfilled, (state) => {
+        state.loading = false;
+        state.transitions = [];
+      })
+      .addCase(resetConfiguration.rejected, (state, action) => {
+        state.loading = false;
       });
   }
 });

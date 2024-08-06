@@ -8,8 +8,10 @@ import { fetchTransitions } from './redux/transitionSlice';
 import StatusList from './components/StatusList';
 import TransitionList from './components/TransitionList';
 import AddStatus from './components/AddStatus';
-//import AddTransition from './components/AddTransition';
-// import ResetButton from './components/ResetButton';
+import AddTransition from './components/AddTransition';
+import ResetButton from './components/ResetButton';
+
+import './App.css';
 
 const App: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -26,11 +28,17 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <h1>Status Manager</h1>
-      <StatusList statuses={statuses} />
-      <AddStatus />
-      <TransitionList transitions={transitions} />
-      {/* <AddTransition /> */}
-      {/* <ResetButton />  */}
+      <div className="App-content">
+        <div className="App-statuses">
+          <StatusList statuses={statuses} />
+          <AddStatus />
+        </div>
+        <div className="App-transitions">
+          <TransitionList transitions={transitions} />
+          <AddTransition />
+        </div>
+      </div>
+      <ResetButton /> 
     </div>
   );
 };
