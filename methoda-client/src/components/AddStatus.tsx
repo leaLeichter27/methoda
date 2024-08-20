@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { AppDispatch, RootState } from '../redux';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStatus } from '../redux/statusSlice';
+import { addStatus, fetchStatuses } from '../redux/statusSlice';
 
 const AddStatus: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -23,6 +23,7 @@ const AddStatus: React.FC = () => {
       await dispatch(addStatus({ name, isInitial })).unwrap();
       setName('');
       setIsInitial(false);
+      dispatch(fetchStatuses());
     } catch (err) {
       alert(err);
     }

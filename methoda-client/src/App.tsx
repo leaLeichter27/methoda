@@ -17,9 +17,7 @@ const App: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const statuses = useSelector((state: RootState) => state.statuses.statuses);
   const transitions = useSelector((state: RootState) => state.transitions.transitions);
-  console.log(transitions);
-  console.log(statuses);  
-
+ 
   useEffect(() => {
     dispatch(fetchStatuses());
     dispatch(fetchTransitions());

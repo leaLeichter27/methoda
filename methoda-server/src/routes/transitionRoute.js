@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/addTransition', async (req, res) => {
     try {
       const { name, fromStatus, toStatus } = req.body;
-
+      console.log('addTransition',name, fromStatus, toStatus)
       const existingTransition = await Transition.findOne({ name });
       if (existingTransition) {
         return res.status(400).send('Transition name must be unique.');
@@ -31,10 +31,11 @@ router.get('/getTransitions', async (req, res) => {
   });
   
 router.delete('/deleteTransition/:id', async (req, res) => {
+  console.log('delete transition', req.params.id);
     try {
       const transition = await Transition.findByIdAndDelete(req.params.id);
       res.send(transition);
-      res.send(`Document with ${transition.name} has been deleted.`);
+      // res.send(`Document with ${transition.name} has been deleted.`);
     } catch (err) {
       res.status(400).send(err.message);
     }

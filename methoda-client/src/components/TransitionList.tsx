@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { RootState, AppDispatch } from '../redux';
 import { deleteTransition, fetchTransitions } from '../redux/transitionSlice';
+import { fetchStatuses } from '../redux/statusSlice';
 import { Transition, Status } from '../types';
 
 interface TransitionListProps {
@@ -13,14 +14,9 @@ const TransitionList: React.FC<TransitionListProps> = ({ transitions }) => {
    const dispatch: AppDispatch = useDispatch();
   const statuses = useSelector((state: RootState) => state.statuses.statuses);
 
-  useEffect(() => {
-    dispatch(fetchTransitions());
-  }, [dispatch, statuses]);
-
-  const handleDelete = (id: string) => {
-    dispatch(deleteTransition(id)).then(() => {
-      dispatch(fetchTransitions());
-    });
+  const handleDelete = async (id: string) => {
+    await dispatch(deleteTransition(id));
+    dispatch(fetchStatuses());
   };
 
   return (
@@ -30,16 +26,16 @@ const TransitionList: React.FC<TransitionListProps> = ({ transitions }) => {
       {transitions.map(transition => {
         const fromStatus = transition.fromStatus as Status;
         const toStatus = transition.toStatus as Status;
-        console.log(fromStatus, toStatus  );
 
-        const fromStatusName = typeof fromStatus === 'string' ? fromStatus : fromStatus.name;
-        const toStatusName = typeof toStatus === 'string' ? toStatus : toStatus.name;
-
+        const fromStatusName = typeof fromStatus === 'string' ? 
+          statuses.find(status => status.id === transition.fromStatus)?.name : fromStatus?.name;
+        const toStatusName = typeof toStatus === 'string' ? 
+        statuses.find(status => status.id === transition.toStatus)?.name : toStatus.name;
 
         return (
-          <li key={transition.id}>
+          <li key={transition._id}>
             {`${transition.name}: ${fromStatusName} -> ${toStatusName}`}
-            <button onClick={() => transition.id && handleDelete(transition.id)}>Delete</button>
+            <button onClick={() => transition._id && handleDelete(transition._id)}>Delete</button>
           </li>
         );
       })}

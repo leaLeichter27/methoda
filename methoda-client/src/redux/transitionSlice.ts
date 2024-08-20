@@ -19,7 +19,6 @@ export const addTransition = createAsyncThunk<Transition, Partial<Transition>, {
   'transitions/addTransition',
   async (transition, thunkAPI) => {
     try {
-      console.log({transition})
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/transition/addTransition`, {
           method: 'POST',
           headers: {
@@ -90,10 +89,11 @@ const transitionSlice = createSlice({
         state.error = action.error.message || 'Failed to fetch transitions';
       })
       .addCase(addTransition.fulfilled, (state, action) => {
+        //console.log({action.payload})
         state.transitions.push(action.payload);
       })
       .addCase(deleteTransition.fulfilled, (state, action) => {
-        state.transitions = state.transitions.filter(transition => transition.id !== action.payload);
+        state.transitions = state.transitions.filter(transition => transition._id !== action.payload);
       })
       .addCase(resetConfiguration.pending, (state) => {
         state.loading = true;

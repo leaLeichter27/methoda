@@ -5,26 +5,31 @@ import { RootState, AppDispatch } from '../redux';
 import { addTransition } from '../redux/transitionSlice';
 
 import { Status } from '../types';
+import { fetchStatuses } from '../redux/statusSlice';
 
 const AddTransition: React.FC = () => {
-    const dispatch: AppDispatch = useDispatch();
-    // const statuses = useSelector((state: RootState) => state.statuses);
-
+  const dispatch: AppDispatch = useDispatch();
   const statuses = useSelector((state: RootState) => state.statuses.statuses);
   const [name, setName] = useState('');
- const [fromStatusId, setFromStatusId] = useState<string>('');
+  const [fromStatusId, setFromStatusId] = useState<string>('');
   const [toStatusId, setToStatusId] = useState<string>('');
 
   
   const handleAddTransition = async () => {
-    const fromStatus = statuses.find(status => status._id === fromStatusId);
-    const toStatus = statuses.find(status => status._id === toStatusId);
+
+    const fromStatus = statuses.find(status => status.name === fromStatusId);
+    const toStatus = statuses.find(status => status.name === toStatusId);
 
     if (fromStatus && toStatus) {
-      dispatch(addTransition({ name, fromStatus, toStatus }));
+      try {
+      await dispatch(addTransition({ name, fromStatus: fromStatus._id || fromStatus.id, toStatus: toStatus._id || toStatus.id }));
       setName('');
       setFromStatusId('');
       setToStatusId('');
+      dispatch(fetchStatuses());
+    } catch (error) {
+      console.error('Error adding transition:', error);
+    }
     } else {
       console.error('Invalid status IDs');
     }
@@ -45,6 +50,7 @@ const AddTransition: React.FC = () => {
           <option key={status._id} value={status._id}>{status.name}</option>
         ))}
       </select>
+
       <select value={toStatusId} onChange={(e) => setToStatusId(e.target.value)}>
         <option value="">To Status</option>
         {statuses.map(status => (

@@ -19,7 +19,7 @@ router.post('/addStatus', async (req, res) => {
       }
       const status = new Status({ name, isInitial });
       await status.save();
-    
+
       res.status(201).send(status);
     } catch (err) {
       res.status(400).send(err.message);
@@ -40,11 +40,13 @@ router.get('/getStatuses', async (req, res) => {
 });
   
 router.delete('/deleteStatus/:id', async (req, res) => {
+  console.log('deleteStatus', req.params.id);
     try {
       const status = await Status.findByIdAndDelete(req.params.id);
       await Transition.deleteMany({
         $or: [{ fromStatus: status._id }, { toStatus: status._id }]
       });
+      console.log('deleteStatus', status  );
       res.send(status);
     } catch (err) {
       res.status(400).send(err.message);
@@ -53,10 +55,14 @@ router.delete('/deleteStatus/:id', async (req, res) => {
 
 const markReachableStatuses = (initialStatusId, statusMap, transitions) => {
   const queue = [initialStatusId];
+  console.log('queue in beginig', queue);
   const visited = new Set();
 
   while (queue.length > 0) {
+    console.log('queue', queue);
     const currentStatusId = queue.shift();
+
+    console.log('currentStatusId', currentStatusId);
     if (visited.has(currentStatusId)) continue;
 
     visited.add(currentStatusId);
@@ -96,12 +102,16 @@ const determineStatusLabels = async () => {
   }
 
 
-const nonFinalStatusIds = new Set(transitions.map(transition => transition.fromStatus.toString()));
+  const nonFinalStatusIds = new Set(transitions.map(transition => transition.fromStatus.toString()));
+  console.log({nonFinalStatusIds})
   statusLabels.forEach(status => {
     if (nonFinalStatusIds.has(status.id.toString())) {
       status.isFinal = false;
     }
   });
+
+
+  console.log({statusLabels})
 
   return statusLabels;
 };

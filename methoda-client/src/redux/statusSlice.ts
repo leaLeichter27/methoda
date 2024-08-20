@@ -7,8 +7,6 @@ export const fetchStatuses = createAsyncThunk<Status[], void, { rejectValue: str
     'statuses/fetchStatuses',
     async (_, thunkAPI) => {
       try {
-        console.log("API URL:", process.env.REACT_APP_API_URL);
-        console.log("fetchStatuses before");
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/status/getStatuses`);
         const data = await response.json();
         console.log("fetchStatuses", data);
@@ -88,7 +86,7 @@ const statusSlice = createSlice({
         state.statuses.push(action.payload);
       })
       .addCase(deleteStatus.fulfilled, (state, action) => {
-        state.statuses = state.statuses.filter(status => status._id !== action.payload);
+        state.statuses = state.statuses.filter(status => status._id || status.id !== action.payload);
       })
       .addCase(resetConfiguration.pending, (state) => {
         state.loading = true;

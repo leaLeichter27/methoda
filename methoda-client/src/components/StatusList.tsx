@@ -12,7 +12,6 @@ interface StatusListProps {
 
 const StatusList: React.FC<StatusListProps> = ({ statuses }) => {
   const dispatch: AppDispatch = useDispatch();
-
   const handleDelete = async (id: string) => {
     await dispatch(deleteStatus(id));
     dispatch(fetchTransitions());
@@ -28,7 +27,7 @@ const StatusList: React.FC<StatusListProps> = ({ statuses }) => {
             {status.isInitial && ' (Initial)'}
             {status.isOrphan && ' (Orphan)'}
             {status.isFinal && ' (Final)'}
-            <button onClick={() => status._id && handleDelete(status._id)}>Delete</button>
+            <button onClick={() => (status._id || status.id) && handleDelete(status._id || status.id || '')}>Delete</button>
           </li>
         ))}
       </ul>
